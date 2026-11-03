@@ -24,6 +24,8 @@ const bank: Problem[] = [1, 2, 3, 4, 5].map((id) => ({
   paidOnly: false,
 }));
 
+const hard: Problem = { ...bank[0], id: 9, slug: "p-9", difficulty: "Hard" };
+
 const practice: SessionConfig = { mode: "practice", topics: [], difficulties: [] };
 const oa: SessionConfig = {
   ...practice,
@@ -46,6 +48,32 @@ describe("createSession", () => {
 
   it("picks just one problem for practice", () => {
     expect(createSession(practice, 1, bank, 0).queue).toHaveLength(1);
+  });
+
+  it("starts on the problem already open when it matches", () => {
+    expect(createSession(practice, 1, bank, 0, Math.random, "p-4").queue).toEqual([bank[3]]);
+  });
+
+  it("never gives OA the problem already open", () => {
+    for (let i = 0; i < 20; i++) {
+      const s = createSession({ ...oa, questionCount: 4 }, 1, bank, 0, Math.random, "p-4");
+      expect(s.queue.map((p) => p.slug)).not.toContain("p-4");
+    }
+  });
+
+  it("ignores the open problem when it doesn't match", () => {
+    const s = createSession(
+      { ...practice, difficulties: ["Hard"] },
+      1,
+      [...bank, hard],
+      0,
+      Math.random,
+      "p-4",
+    );
+    expect(s.queue).toEqual([hard]);
+    expect(createSession(practice, 1, bank, 0, Math.random, "unknown").queue[0].slug).not.toBe(
+      "unknown",
+    );
   });
 
   it("throws when nothing matches", () => {

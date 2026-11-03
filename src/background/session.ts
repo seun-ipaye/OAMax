@@ -1,5 +1,5 @@
 import type { Outcome, Problem, Session, SessionConfig, Submission } from "../shared/types";
-import { pickNext, pickSet, type Rng } from "./picker";
+import { filterProblems, pickNext, pickSet, type Rng } from "./picker";
 
 // Pure session transitions. The service worker handles storage and tabs around these.
 
@@ -9,17 +9,28 @@ export class NoProblemsError extends Error {
   }
 }
 
+/**
+ * Starts a session. In practice, the problem already on screen (`openSlug`) is kept as the
+ * first problem if it matches the config. OA always picks fresh and never includes it,
+ * so the user has no say in their questions.
+ */
 export function createSession(
   config: SessionConfig,
   tabId: number,
   problems: Problem[],
   now: number,
   rng: Rng = Math.random,
+  openSlug: string | null = null,
 ): Session {
-  const queue =
-    config.mode === "oa"
-      ? pickSet(problems, config, config.questionCount, rng)
-      : [pickNext(problems, config, new Set(), rng)].filter((p): p is Problem => p !== null);
+  let queue: Problem[];
+  if (config.mode === "oa") {
+    const pool = problems.filter((p) => p.slug !== openSlug);
+    queue = pickSet(pool, config, config.questionCount, rng);
+  } else {
+    const open = filterProblems(problems, config).find((p) => p.slug === openSlug);
+    const next = open ?? pickNext(problems, config, new Set(), rng);
+    queue = next ? [next] : [];
+  }
   if (queue.length === 0) throw new NoProblemsError();
 
   return {

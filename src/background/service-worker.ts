@@ -40,7 +40,8 @@ async function handle(msg: Request): Promise<RequestMap[Request["type"]]["respon
   switch (msg.type) {
     case "START_SESSION": {
       const tab = await targetTab();
-      const session = createSession(msg.payload, tab, PROBLEMS, Date.now());
+      const openSlug = slugFromUrl((await chrome.tabs.get(tab)).url);
+      const session = createSession(msg.payload, tab, PROBLEMS, Date.now(), Math.random, openSlug);
       return commit(session);
     }
     case "NEXT_PROBLEM":
@@ -147,9 +148,14 @@ async function targetTab(): Promise<number> {
   return (await chrome.tabs.create({ active: true })).id!;
 }
 
-/** Navigates the session's tab, reopening it if the user closed it. */
+/** Navigates the session's tab, reopening it if the user closed it. Leaves it alone if already there. */
 async function openInTab(tabId: number, slug: string): Promise<void> {
   try {
+    const tab = await chrome.tabs.get(tabId);
+    if (slugFromUrl(tab.url) === slug) {
+      await chrome.tabs.update(tabId, { active: true });
+      return;
+    }
     await chrome.tabs.update(tabId, { url: problemUrl(slug), active: true });
   } catch {
     const tab = await chrome.tabs.create({ url: problemUrl(slug), active: true });
