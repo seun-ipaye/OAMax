@@ -1,4 +1,4 @@
-# LeetTest
+# OAMax
 
 A Chrome extension for randomized LeetCode practice and timed OA simulation. It lives in Chrome's side panel next to the problem you're solving.
 
@@ -19,7 +19,7 @@ Then in Chrome:
 
 1. Open `chrome://extensions` and turn on **Developer mode**.
 2. Click **Load unpacked** and pick the `dist` folder.
-3. Click the LeetTest toolbar icon to open the side panel.
+3. Click the OAMax toolbar icon to open the side panel.
 
 You need to be logged into LeetCode to submit. After changing code, run `npm run build` again and click the reload arrow on the extension.
 

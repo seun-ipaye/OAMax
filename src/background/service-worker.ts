@@ -21,7 +21,7 @@ chrome.runtime.onMessage.addListener((msg: Request, _sender, sendResponse) => {
   serialize(() => handle(msg))
     .then((data): Reply<unknown> => ({ ok: true, data }))
     .catch((err: unknown): Reply<unknown> => {
-      console.error(`[LeetTest] ${msg.type} failed:`, err);
+      console.error(`[OAMax] ${msg.type} failed:`, err);
       return { ok: false, error: String((err as Error)?.message ?? err) };
     })
     .then(sendResponse);
@@ -70,7 +70,7 @@ chrome.webRequest.onCompleted.addListener(
     const id = submissionIdFromUrl(details.url);
     if (!id || details.tabId < 0 || seenSubmissions.has(id)) return;
     serialize(() => checkSubmission(id, details.url, details.tabId)).catch((err) =>
-      console.error("[LeetTest] submission check failed:", err),
+      console.error("[OAMax] submission check failed:", err),
     );
   },
   { urls: [CHECK_URL_PATTERN], types: ["xmlhttprequest"] },
@@ -127,7 +127,7 @@ chrome.alarms.onAlarm.addListener((alarm) => {
     const session = await loadSession();
     if (session?.status !== "active" || alarm.name !== alarmName(session)) return;
     await commit(advance(session, "timed-out", PROBLEMS, Date.now()));
-  }).catch((err) => console.error("[LeetTest] deadline failed:", err));
+  }).catch((err) => console.error("[OAMax] deadline failed:", err));
 });
 
 async function requireActive(): Promise<Session> {

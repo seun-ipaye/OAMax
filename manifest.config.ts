@@ -3,7 +3,7 @@ import pkg from "./package.json" with { type: "json" };
 
 export default defineManifest({
   manifest_version: 3,
-  name: "LeetTest",
+  name: "OAMax",
   version: pkg.version,
   description: "Randomized, timed LeetCode practice and OA simulation.",
   permissions: ["sidePanel", "storage", "tabs", "alarms", "webRequest"],
@@ -17,7 +17,7 @@ export default defineManifest({
     128: "icons/icon-128.png",
   },
   action: {
-    default_title: "Open LeetTest",
+    default_title: "Open OAMax",
     default_icon: {
       16: "icons/icon-16.png",
       32: "icons/icon-32.png",

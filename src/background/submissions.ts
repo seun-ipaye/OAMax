@@ -40,7 +40,7 @@ export function parseCheck(body: CheckResponse, slug: string, now: number): Subm
   if (body.state !== "SUCCESS") return null;
   const verdict = VERDICTS.find((v) => v === body.status_msg);
   if (!verdict) {
-    console.warn("[LeetTest] unknown verdict:", body.status_msg);
+    console.warn("[OAMax] unknown verdict:", body.status_msg);
     return null;
   }
   return {

@@ -40,7 +40,7 @@ export default function App() {
   return (
     <main>
       <header className="app-header">
-        <h1>LeetTest</h1>
+        <h1>OAMax</h1>
         {session?.status !== "active" && !showHistory && session?.status !== "finished" && (
           <button className="link" onClick={() => setShowHistory(true)}>
             History
