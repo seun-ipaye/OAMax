@@ -103,12 +103,12 @@ export function advance(
 }
 
 /**
- * Ends early. The current problem is recorded as skipped; in OA, so is every unstarted one,
- * so results always cover the full set.
+ * Ends early. The current problem is scored from its submissions (accepted, failed, or
+ * skipped if none); in OA every unstarted one is skipped, so results cover the full set.
  */
 export function endSession(session: Session, now: number): Session {
   if (session.status !== "active") return session;
-  let next = closeCurrent(session, "skipped", now);
+  let next = closeCurrent(session, outcomeFromSubmissions(session), now);
   if (next.config.mode === "oa") {
     const unstarted = next.queue.slice(next.index + 1).map((problem) => ({
       problem,

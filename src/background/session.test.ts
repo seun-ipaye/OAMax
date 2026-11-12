@@ -128,6 +128,18 @@ describe("endSession", () => {
     expect(s.results.map((r) => r.outcome)).toEqual(["skipped"]);
   });
 
+  it("keeps an Accepted on the current problem", () => {
+    let s = createSession(practice, 1, bank, 0);
+    s = { ...s, currentSubmissions: [{ slug: currentProblem(s)!.slug, verdict: "Accepted", submittedAt: 1 }] };
+    expect(endSession(s, 2).results.map((r) => r.outcome)).toEqual(["accepted"]);
+  });
+
+  it("marks a current problem with only failed submissions as failed", () => {
+    let s = createSession(practice, 1, bank, 0);
+    s = { ...s, currentSubmissions: [{ slug: currentProblem(s)!.slug, verdict: "Wrong Answer", submittedAt: 1 }] };
+    expect(endSession(s, 2).results.map((r) => r.outcome)).toEqual(["failed"]);
+  });
+
   it("is a no-op on a finished session", () => {
     const s = endSession(createSession(practice, 1, bank, 0), 1);
     expect(endSession(s, 2)).toBe(s);
